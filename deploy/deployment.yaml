@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k8s-aggregator-mcp-server
+  labels:
+    app: k8s-aggregator-mcp
+  namespace: k8s-aggregator-mcp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: k8s-aggregator-mcp
+  template:
+    metadata:
+      labels:
+        app: k8s-aggregator-mcp
+    spec:
+      serviceAccountName: k8s-aggregator-sa
+      containers:
+      - name: k8s-aggregator-mcp
+        image: quay.io/REPLACE_WITH_YOUR_USERNAME/k8s-aggregator-mcp:latest
+        ports:
+        - containerPort: 9029
+        env:
+          - name: SERVICE_NAME
+            value: "lowlevelmcp-service"
+          - name: SERVICE_NAMESPACE
+            value: "default"
+          - name: BACKEND_PORT
+            value: "9028"
+          - name: FRONTEND_PORT
+            value: "9029"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: k8s-aggregator-mcp-service
+  labels:
+    app: k8s-aggregator-mcp
+  namespace: k8s-aggregator-mcp
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 9029
+      targetPort: 9029
+      protocol: TCP
+  selector:
+    app: k8s-aggregator-mcp
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: k8s-aggregator-mcp-route
+  labels:
+    app: k8s-aggregator-mcp
+  namespace: k8s-aggregator-mcp
+spec:
+  port:
+    targetPort: http
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Allow
+  to:
+    kind: Service
+    name: k8s-aggregator-mcp-service
+    weight: 100
+  wildcardPolicy: None
+

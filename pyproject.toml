@@ -1,0 +1,11 @@
+[project]
+name = "k8s-aggregator-mcp"
+version = "0.1.0"
+description = "MCP server that dynamically discovers and proxies tools from k8s per-node backend MCP servers"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "fastmcp>=3.0.0b2",
+    "kubernetes",
+    "pydantic",
+]
