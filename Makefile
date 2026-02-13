@@ -3,10 +3,6 @@
 # Image settings (override QUAY_WORKSPACE to a different namespace)
 QUAY_WORKSPACE ?= $(USER)
 VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo "latest")
-
-# Image settings (backend/ and proxy/ Containerfiles; override QUAY_WORKSPACE to push elsewhere)
-QUAY_WORKSPACE ?= $(USER)
-VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo "latest")
 IMAGE ?= quay.io/$(QUAY_WORKSPACE)/k8s-aggregator-mcp:$(VERSION)
 
 export CONTAINER_ENGINE ?= podman

@@ -83,7 +83,7 @@ ClusterIP Service and (on OpenShift) a Route for external access. See the
 `deploy/` directory for manifests.
 
 A `Makefile` is provided for convenience, with tools to build/push the container
-image, and then deploy/undeploy de MCP server.
+image, and then deploy/undeploy the MCP server.
 
 An example backend MCP server providing a simple tool and deployment is located
 in the `backend/` directory.

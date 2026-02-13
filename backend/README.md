@@ -5,7 +5,7 @@ k8s aggregator MCP server. It exposes a single tool `get_cpuinfo` used to
 get the /proc/cpuinfo output from the node.
 
 The MCP server is deployed as a DaemonSet to a Kubernetes/OpenShift cluster,
-and is exposed internally to the cluster using a headless service.
+and then exposed internally to the cluster using a headless service.
 
 ## Deployment
 
@@ -13,7 +13,7 @@ The MCP Server is typically deployed as a Kubernetes Deployment with a
 Service. See the `deploy/` directory for manifests.
 
 A `Makefile` is provided for convenience, with tools to build/push the container
-image, and then deploy/undeploy de MCP server.
+image, and then deploy/undeploy the MCP server.
 
 ## Running locally
 
