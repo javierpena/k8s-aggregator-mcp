@@ -1,8 +1,9 @@
 # Example MCP server for k8s aggregator MCP
 
 This is a very simple example used to illustrate the capabilities of the
-k8s aggregator MCP server. It exposes a single tool `get_cpuinfo` used to
-get the /proc/cpuinfo output from the node.
+k8s aggregator MCP server. Initially, it exposed a single tool `get_cpuinfo`
+used to get the /proc/cpuinfo output from the node. More tools can be added
+in the future.
 
 The MCP server is deployed as a DaemonSet to a Kubernetes/OpenShift cluster,
 and then exposed internally to the cluster using a headless service.

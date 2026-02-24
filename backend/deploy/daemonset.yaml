@@ -3,7 +3,7 @@ apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: lowlevel-mcp
-  namespace: default
+  namespace: lowlevel-mcp
   labels:
     app: lowlevel-mcp
 spec:
@@ -15,6 +15,7 @@ spec:
       labels:
         app: lowlevel-mcp
     spec:
+      serviceAccountName: lowlevel-sa      
       tolerations:
       # these tolerations are to have the daemonset runnable on control plane nodes
       - key: node-role.kubernetes.io/control-plane
