@@ -1,5 +1,6 @@
+from typing import Annotated, Any
+import subprocess
 from fastmcp import FastMCP
-from typing import Any
 import cpu_intersect
 import list_allowed_processes_per_cpu
 
@@ -79,6 +80,27 @@ def list_processes_for_cpu(cpu: int) -> str:
         output.append(f"{pid:>6}  {name}")
 
     return "\n".join(output)
+
+@mcp.tool(annotations={
+            "readOnlyHint": True,
+            "destructiveHint": False
+            }
+)
+def read_msr_register(
+        register: Annotated[str, "Hexadecimal number for the register to be read"],
+        cpu: Annotated[int, "If specified, read the register from this CPU. Defaults to 0"] = 0
+    ) -> str:
+    """Read an MSR register from the specified CPU.
+
+    Returns:
+        The MSR register value, in hexadecimal.
+    """
+    args = ["/usr/sbin/rdmsr", "-x", "-p", str(cpu), register]
+    result = subprocess.run(args, text=True, capture_output=True, check=False)
+    if result.returncode != 0:
+        return f"Error: {result.stderr}\n"
+    return result.stdout
+
 
 def run():
     mcp.run(transport="http", host="0.0.0.0", port=9028)
