@@ -10,12 +10,12 @@ LABEL name="k8s-aggregator-mcp-server" \
       io.k8s.description="${DESCRIPTION}" \
       io.openshift.tags="mcp,python"
 
-# Install fastmcp (transforms) + PyYAML
+# Install requirements
 COPY --chown=1001:0 requirements.txt /opt/app/requirements.txt
 WORKDIR /opt/app
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy server and tool descriptions YAML
+# Copy server
 COPY --chown=1001:0 server.py /opt/app/server.py
 
 EXPOSE 9029
