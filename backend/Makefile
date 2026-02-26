@@ -3,11 +3,11 @@
 # Image settings (override QUAY_WORKSPACE to a different namespace)
 QUAY_WORKSPACE ?= $(USER)
 VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo "latest")
-IMAGE ?= quay.io/$(QUAY_WORKSPACE)/lowlevel-mcp:$(VERSION)
+IMAGE ?= quay.io/$(QUAY_WORKSPACE)/demo-mcp:$(VERSION)
 
 export CONTAINER_ENGINE ?= podman
 
-KUSTOMIZE_IMAGE := quay.io/REPLACE_WITH_YOUR_USERNAME/lowlevel-mcp
+KUSTOMIZE_IMAGE := quay.io/REPLACE_WITH_YOUR_USERNAME/demo-mcp
 
 ## container-build: Build container image
 container-build:
@@ -34,7 +34,7 @@ help:
 	@sed -n 's/^##//p' $(MAKEFILE_LIST) | column -t -s ':' | sed -e 's/^/ /'
 	@echo ""
 	@echo "Variables:"
-	@echo "  IMAGE		        Image to build (default:  quay.io/$(QUAY_WORKSPACE)/lowlevel-mcp:$(VERSION))"
+	@echo "  IMAGE		        Image to build (default:  quay.io/$(QUAY_WORKSPACE)/demo-mcp:$(VERSION))"
 	@echo "  QUAY_WORKSPACE         Quay workspace for the image"
 	@echo "  CONTAINER_ENGINE       Container engine (default: podman, can use docker)"
 	@echo "  VERSION                Image tag (default: git describe or 'latest')"

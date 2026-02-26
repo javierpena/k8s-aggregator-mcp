@@ -2,20 +2,20 @@
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: lowlevel-mcp
-  namespace: lowlevel-mcp
+  name: demo-mcp
+  namespace: demo-mcp
   labels:
-    app: lowlevel-mcp
+    app: demo-mcp
 spec:
   selector:
     matchLabels:
-      app: lowlevel-mcp
+      app: demo-mcp
   template:
     metadata:
       labels:
-        app: lowlevel-mcp
+        app: demo-mcp
     spec:
-      serviceAccountName: lowlevel-sa      
+      serviceAccountName: demo-sa
       tolerations:
       # these tolerations are to have the daemonset runnable on control plane nodes
       - key: node-role.kubernetes.io/control-plane
@@ -25,8 +25,8 @@ spec:
         operator: Exists
         effect: NoSchedule
       containers:
-      - name: lowlevel-daemonset
-        image: quay.io/REPLACE_WITH_YOUR_USERNAME/lowlevel-mcp
+      - name: demo-daemonset
+        image: quay.io/REPLACE_WITH_YOUR_USERNAME/demo-mcp
         resources:
           limits:
             memory: 100Mi
@@ -37,16 +37,15 @@ spec:
         - containerPort: 9028
           name: mcp-port
           protocol: TCP
-      hostPID: true
       terminationGracePeriodSeconds: 30
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: lowlevelmcp-service
+  name: demo-service
 spec:
   selector:
-    app: lowlevel-mcp
+    app: demo-mcp
   clusterIP: None
   type: ClusterIP
   ports:

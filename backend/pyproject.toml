@@ -1,7 +1,7 @@
 [project]
-name = "lowlevel-mcp"
+name = "demo-mcp"
 version = "0.1.0"
-description = "Example MCP server providing some low-level server information"
+description = "Demo MCP server providing /proc/cpuinfo information"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
