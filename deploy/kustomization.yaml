@@ -19,5 +19,3 @@ labels:
 # Images set at deploy time
 images:
 - name: quay.io/REPLACE_WITH_YOUR_USERNAME/k8s-aggregator-mcp
-  newName: quay.io/javierpena/k8s-aggregator-mcp
-  newTag: latest

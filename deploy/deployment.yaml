@@ -25,7 +25,7 @@ spec:
           - name: SERVICE_NAME
             value: "lowlevelmcp-service"
           - name: SERVICE_NAMESPACE
-            value: "default"
+            value: "lowlevel-mcp"
           - name: BACKEND_PORT
             value: "9028"
           - name: FRONTEND_PORT

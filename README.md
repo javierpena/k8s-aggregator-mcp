@@ -47,6 +47,22 @@ Tool discovery is a one-time operation that runs at startup:
 If no backend endpoints are available at startup, the frontend refuses to
 start.
 
+## Prompt discovery
+
+Prompt discovery also runs at startup, immediately after tool discovery:
+
+1. The frontend connects to the same backend pod and calls `list_prompts`.
+2. For each prompt returned, it creates a wrapper that:
+   - Preserves the original prompt name, description, and argument schema.
+   - Proxies `get_prompt` calls to the first available backend pod.
+3. The rendered messages returned by the backend are forwarded back to the
+   caller unchanged.
+
+Unlike tools, prompts are static templates that are not node-specific, so no
+`node` parameter is injected. Prompt discovery is non-fatal: if no prompts are
+found or the backend returns an error, the frontend starts normally and simply
+exposes no prompts.
+
 ## Configuration
 
 The following environment variables can be used to override defaults:

@@ -1,4 +1,5 @@
 from fastmcp import FastMCP, Client
+from fastmcp.prompts import Message
 from typing import Annotated, Any
 from pydantic import Field
 import asyncio
@@ -168,6 +169,73 @@ def _register_tools(tools) -> None:
         print(f"  registered tool: {tool.name}")
 
 
+async def _discover_prompts() -> list:
+    """Connect to the first backend pod and list its MCP prompts."""
+    ip = _get_first_endpoint_ip()
+    url = f"http://{ip}:{BACKEND_PORT}/mcp/"
+    print(f"Discovering prompts from backend at {url} ...")
+    async with Client(url) as remote:
+        return await remote.list_prompts()
+
+
+def _build_prompt_handler(prompt_name: str, prompt_description: str, arguments: list):
+    """Return an async handler that proxies get_prompt calls to the backend."""
+
+    async def _handler(**kwargs):
+        ip = _get_first_endpoint_ip()
+        url = f"http://{ip}:{BACKEND_PORT}/mcp/"
+        async with Client(url) as remote:
+            result = await remote.get_prompt(prompt_name, kwargs)
+        # Convert MCP PromptMessage objects to FastMCP Message objects
+        messages = []
+        for msg in result.messages:
+            content = msg.content
+            text = content.text if hasattr(content, "text") else str(content)
+            messages.append(Message(text, role=msg.role))
+        return messages
+
+    params: list[inspect.Parameter] = []
+    annotations: dict[str, Any] = {}
+
+    for arg in arguments or []:
+        name = arg.name
+        desc = getattr(arg, "description", "") or ""
+        required = getattr(arg, "required", True)
+
+        ann = Annotated[str, Field(description=desc)] if desc else str
+        default = inspect.Parameter.empty if required else None
+
+        params.append(
+            inspect.Parameter(
+                name,
+                inspect.Parameter.POSITIONAL_OR_KEYWORD,
+                annotation=ann,
+                default=default,
+            )
+        )
+        annotations[name] = ann
+
+    _handler.__signature__ = inspect.Signature(params)
+    _handler.__annotations__ = annotations
+    _handler.__name__ = prompt_name
+    _handler.__qualname__ = prompt_name
+    _handler.__doc__ = prompt_description
+
+    return _handler
+
+
+def _register_prompts(prompts) -> None:
+    """Wrap each backend prompt and register it on the frontend server."""
+    for prompt in prompts:
+        handler = _build_prompt_handler(
+            prompt.name,
+            prompt.description or "",
+            prompt.arguments or [],
+        )
+        mcp.prompt()(handler)
+        print(f"  registered prompt: {prompt.name}")
+
+
 def run():
     # 1. Discover tools from the first available backend pod
     tools = asyncio.run(_discover_tools())
@@ -177,7 +245,20 @@ def run():
     print(f"Discovered {len(tools)} tool(s) from backend.")
     _register_tools(tools)
 
-    # 2. Start the frontend server
+    # 2. Discover prompts from the first available backend pod (non-fatal if absent)
+    try:
+        prompts = asyncio.run(_discover_prompts())
+    except Exception as exc:
+        print(f"Warning: prompt discovery failed ({exc}); continuing without prompts.")
+        prompts = []
+
+    if prompts:
+        print(f"Discovered {len(prompts)} prompt(s) from backend.")
+        _register_prompts(prompts)
+    else:
+        print("No prompts discovered from the backend MCP server.")
+
+    # 3. Start the frontend server
     mcp.run(transport="http", host="0.0.0.0", port=FRONTEND_PORT)
 
 
